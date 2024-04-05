@@ -15,14 +15,6 @@ class CarsDataset(Dataset):
         image_path = image_info['image_path']
         image = Image.open(image_path).convert('RGB')
 
-        # Extract bounding box coordinates
-        bbox = [
-            image_info['x_min'],
-            image_info['y_min'],
-            image_info['x_max'],
-            image_info['y_max']
-        ]
-
         # Extract class label
         class_label = image_info['class']
 
@@ -30,4 +22,4 @@ class CarsDataset(Dataset):
         if self.transform:
             image = self.transform(image)
 
-        return image, bbox, class_label
+        return image, class_label

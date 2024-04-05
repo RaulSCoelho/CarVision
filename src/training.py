@@ -29,7 +29,6 @@ np.random.shuffle(indices)
 split_ratio = 0.8  # 80% for training, 20% for validation
 # Calculate the split index
 split_index = int(len(annotations_df) * split_ratio)
-
 # Split the indices into training and validation sets
 train_indices = indices[:split_index]
 val_indices = indices[split_index:]
@@ -63,7 +62,7 @@ optimizer = torch.optim.Adam(car_classifier.parameters(), lr=0.001)
 num_epochs = 10
 for epoch in range(num_epochs):
     car_classifier.train()
-    for images, _, labels in train_dataloader:
+    for images, labels in train_dataloader:
         optimizer.zero_grad()
         outputs = car_classifier(images)
         loss = criterion(outputs, labels)
@@ -76,7 +75,7 @@ car_classifier.eval()
 with torch.no_grad():
     total_correct = 0
     total_samples = 0
-    for images, _, labels in val_dataloader:
+    for images, labels in val_dataloader:
         outputs = car_classifier(images)
         _, predicted = torch.max(outputs, 1)
         total_samples += labels.size(0)
