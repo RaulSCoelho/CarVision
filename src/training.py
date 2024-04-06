@@ -1,85 +1,149 @@
-import os
-import numpy as np
-import pandas as pd
 import torch
+import torchvision
+import numpy as np
+from matplotlib import pyplot as plt
 from torchvision import transforms
-from torch.utils.data import DataLoader
-from data.cars_dataset import CarsDataset
-from models.car_classifier import CarClassifier
-from utils.data import mat_to_list
+from torchvision.datasets import ImageFolder
+from torch.utils.data import DataLoader, random_split
 
 # Define paths and parameters
-cars_train_dir = 'src/data/cars_train'
-cars_train_csv_dir = 'src/data/car_dataset_train.csv'
-cars_mat_file_dir = 'src/data/cars_annos.mat'
-batch_size = 32
+train_cars_dataset_path = 'src/data/cars_train'
+mean = [0.4708, 0.4602, 0.4550]
+std = [0.2593, 0.2584, 0.2634]
 
-classes_df = mat_to_list(cars_mat_file_dir, 'class_names')
-num_classes=len(classes_df)
-
-annotations_df = pd.read_csv(cars_train_csv_dir)
-annotations_df['class'] -= 1
-annotations_df['image_path'] = annotations_df['image_path'].apply(lambda x: os.path.join(cars_train_dir, x))
-
-# Shuffle the indices of the dataset
-indices = np.arange(len(annotations_df))
-np.random.shuffle(indices)
-
-# Define the split ratio
-split_ratio = 0.8  # 80% for training, 20% for validation
-# Calculate the split index
-split_index = int(len(annotations_df) * split_ratio)
-# Split the indices into training and validation sets
-train_indices = indices[:split_index]
-val_indices = indices[split_index:]
-
-# Create training and validation DataFrames
-train_df = annotations_df.iloc[train_indices]
-val_df = annotations_df.iloc[val_indices]
-
-# Define transformations
-transform = transforms.Compose([
-    transforms.Resize((256, 256)),
+train_cars_transforms = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomRotation(10),
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    transforms.Normalize(torch.Tensor(mean), torch.Tensor(std))
 ])
 
-# Create training dataset and DataLoader
-train_dataset = CarsDataset(train_df, transform)
-train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-# Create validation dataset and DataLoader
-val_dataset = CarsDataset(val_df, transform)
-val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+test_cars_transforms = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(torch.Tensor(mean), torch.Tensor(std))
+])
 
-# Create model instance
-car_classifier = CarClassifier(num_classes)
+# Load the dataset
+dataset = ImageFolder(root=train_cars_dataset_path)
 
-# Define loss function and optimizer
-criterion = torch.nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(car_classifier.parameters(), lr=0.001)
+# Split dataset into train and test
+train_size = int(0.8 * len(dataset))  # 80% for training, 20% for testing
+test_size = len(dataset) - train_size
+train_cars_dataset, test_cars_dataset = random_split(dataset, [train_size, test_size])
 
-# Training loop
-num_epochs = 10
-for epoch in range(num_epochs):
-    car_classifier.train()
-    for images, labels in train_dataloader:
-        optimizer.zero_grad()
-        outputs = car_classifier(images)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
-    print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item()}')
+# Apply transformations to train and test datasets
+train_cars_dataset.dataset.transform = train_cars_transforms
+test_cars_dataset.dataset.transform = test_cars_transforms
 
-# Evaluation loop
-car_classifier.eval()
-with torch.no_grad():
-    total_correct = 0
-    total_samples = 0
-    for images, labels in val_dataloader:
-        outputs = car_classifier(images)
-        _, predicted = torch.max(outputs, 1)
-        total_samples += labels.size(0)
-        total_correct += (predicted == labels).sum().item()
+def show_transformed_images(dataset: ImageFolder, num_images: int = 6):
+    loader = DataLoader(dataset, batch_size=num_images, shuffle=True)
+    batch = next(iter(loader))
+    images, labels = batch
 
-    accuracy = total_correct / total_samples
-    print(f'Validation Accuracy: {accuracy}')
+    print(f"Labels: {labels}")
+    grid = torchvision.utils.make_grid(images, nrow=3)
+    plt.figure(figsize=(11,11))
+    plt.imshow(np.transpose(grid, (1, 2, 0)))
+    plt.show()
+
+show_transformed_images(train_cars_dataset)
+
+# Load the dataset
+train_cars_loader = DataLoader(train_cars_dataset, batch_size=32, shuffle=True)
+test_cars_loader = DataLoader(test_cars_dataset, batch_size=32, shuffle=False)
+
+def get_device():
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def save_checkpoint(model: torch.nn.Module, epoch: int, optimizer: torch.optim.Optimizer, best_acc: float):
+    state = {
+        'model': model.state_dict(),
+        'epoch': epoch,
+        'optimizer': optimizer.state_dict(),
+        'best_acc': best_acc
+    }
+    torch.save(state, 'best_cars_model_checkpoint.pth.tar')
+
+def train_cars_nn(model: torch.nn.Module, train_loader: DataLoader, test_loader: DataLoader, criterion: torch.nn.CrossEntropyLoss, optimizer: torch.optim.Optimizer, n_epochs: int):
+    device = get_device()
+    best_acc = 0
+
+    for epoch in range(n_epochs):
+        print(f"Epoch {epoch+1}/{n_epochs}")
+        model.train()
+        running_loss = 0.0
+        running_correct = 0.0
+        total = 0
+
+        for images, labels in train_loader:
+            images, labels = images.to(device), labels.to(device)
+            total += labels.size(0)
+
+            optimizer.zero_grad()
+
+            outputs = model(images)
+            _, predicted = torch.max(outputs.data, 1)
+            loss = criterion(outputs, labels)
+
+            loss.backward()
+            optimizer.step()
+
+            running_loss += loss.item()
+            running_correct += (predicted == labels).sum().item()
+
+        epoch_loss = running_loss / len(train_loader)
+        epoch_acc = 100 * running_correct / total
+
+        print(f"    Training: Predicted {running_correct} of {total} images correctly (Loss: {epoch_loss:.4f} - Acc: {epoch_acc:.2f}%)")
+
+        eval_acc = evaluate_model(model, test_loader)
+
+        if eval_acc > best_acc:
+            best_acc = eval_acc
+            save_checkpoint(model, epoch + 1, optimizer, best_acc)
+
+    return model
+
+def evaluate_model(model: torch.nn.Module, test_loader: DataLoader):
+    model.eval()
+    device = get_device()
+    predicted_correctly = 0
+    total = 0
+
+    with torch.no_grad():
+        for images, labels in test_loader:
+            images, labels = images.to(device), labels.to(device)
+            total += labels.size(0)
+
+            outputs = model(images)
+            _, predicted = torch.max(outputs.data, 1)
+            predicted_correctly += (predicted == labels).sum().item()
+
+    accuracy = 100 * predicted_correctly / total
+    print(f"    Testing: Predicted {predicted_correctly} of {total} images correctly (Acc: {accuracy:.2f}%)")
+
+    return accuracy
+
+resnet18_model = torchvision.models.resnet18()
+n_features = resnet18_model.fc.in_features
+n_classes = len(dataset.classes)
+resnet18_model.fc = torch.nn.Linear(n_features, n_classes)
+device = get_device()
+resnet18_model = resnet18_model.to(device)
+
+loss_fn = torch.nn.CrossEntropyLoss()
+optimizer = torch.optim.SGD(resnet18_model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.003)
+
+train_cars_nn(resnet18_model, train_cars_loader, test_cars_loader, loss_fn, optimizer, n_epochs=100)
+
+checkpoint = torch.load('best_cars_model_checkpoint.pth.tar')
+
+resnet18_model = torchvision.models.resnet18()
+n_features = resnet18_model.fc.in_features
+n_classes = len(dataset.classes)
+resnet18_model.fc = torch.nn.Linear(n_features, n_classes)
+resnet18_model.load_state_dict(checkpoint['model'])
+
+torch.save(resnet18_model, 'best_cars_model.pth')

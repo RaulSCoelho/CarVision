@@ -2,6 +2,8 @@ from typing import Callable, Dict, List, Optional
 import numpy as np
 import pandas as pd
 from scipy.io import loadmat
+from torch.utils.data import DataLoader
+from utils.time import loading_message
 
 ColsType = Dict[str, str]
 FilterConditionType = Optional[Callable[[dict], np.ndarray]]
@@ -52,3 +54,20 @@ def mat_to_list(path_to_mat_file: str, data_key: str) -> List[str]:
     data_list = [str(item[0]) for item in data_array]
 
     return data_list
+
+@loading_message("Calculating mean and std")
+def get_mean_and_std(loader: DataLoader):
+    mean = 0.
+    std = 0.
+    total_images_count = 0
+    for images, _ in loader:
+        batch_samples = images.size(0)
+        images = images.view(batch_samples, images.size(1), -1)
+        mean += images.mean(2).sum(0)
+        std += images.std(2).sum(0)
+        total_images_count += batch_samples
+
+    mean /= total_images_count
+    std /= total_images_count
+
+    return mean, std
