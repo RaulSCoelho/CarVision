@@ -4,11 +4,11 @@ from typing import List
 import torch
 from torchvision import transforms
 from matplotlib import pyplot as plt
-from utils.data import mat_to_list
 from PIL import Image
+from torchvision.datasets import ImageFolder
 
 cars_model = torch.load('best_cars_model.pth')
-classes_df = mat_to_list('src/data/cars_annos.mat', 'class_names')
+classes = ImageFolder('src/data/cars_train').classes
 
 mean = [0.4708, 0.4602, 0.4550]
 std = [0.2593, 0.2584, 0.2634]
@@ -65,4 +65,4 @@ cars_test_dir = 'src/data/cars_test'
 image_dirs = os.listdir(cars_test_dir)
 image_paths = [os.path.join(cars_test_dir, dir) for dir in random.sample(image_dirs, 6)]
 
-classify(cars_model, cars_transforms, image_paths, classes_df)
+classify(cars_model, cars_transforms, image_paths, classes)

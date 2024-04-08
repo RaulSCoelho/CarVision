@@ -126,7 +126,7 @@ def evaluate_model(model: torch.nn.Module, test_loader: DataLoader):
 
     return accuracy
 
-resnet18_model = torchvision.models.resnet18()
+resnet18_model = torchvision.models.resnet18(weights=torchvision.models.ResNet18_Weights.IMAGENET1K_V1)
 n_features = resnet18_model.fc.in_features
 n_classes = len(dataset.classes)
 resnet18_model.fc = torch.nn.Linear(n_features, n_classes)
@@ -136,7 +136,7 @@ resnet18_model = resnet18_model.to(device)
 loss_fn = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(resnet18_model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.003)
 
-train_cars_nn(resnet18_model, train_cars_loader, test_cars_loader, loss_fn, optimizer, n_epochs=100)
+train_cars_nn(resnet18_model, train_cars_loader, test_cars_loader, loss_fn, optimizer, n_epochs=20)
 
 checkpoint = torch.load('best_cars_model_checkpoint.pth.tar')
 
