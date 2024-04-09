@@ -28,6 +28,8 @@ test_cars_transforms = transforms.Compose([
 # Load the dataset
 dataset = ImageFolder(root=train_cars_dataset_path)
 
+print(dataset.class_to_idx)
+
 # Split dataset into train and test
 train_size = int(0.8 * len(dataset))  # 80% for training, 20% for testing
 test_size = len(dataset) - train_size
@@ -132,6 +134,8 @@ n_classes = len(dataset.classes)
 resnet18_model.fc = torch.nn.Linear(n_features, n_classes)
 device = get_device()
 resnet18_model = resnet18_model.to(device)
+
+print(device)
 
 loss_fn = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(resnet18_model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.003)
