@@ -4,3 +4,5 @@
 __pycache__
 
 ignore_data
+
+*.tar
