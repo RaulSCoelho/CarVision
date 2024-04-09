@@ -6,6 +6,14 @@ import logging
 import pandas as pd
 from typing import List
 
+def remove_empty_dirs(source_dir):
+    # Get list of folders in source directory
+    folders = os.listdir(source_dir)
+
+    for folder in folders:
+        if not os.listdir(os.path.join(source_dir, folder)):
+            shutil.rmtree(os.path.join(source_dir, folder))
+
 def split_data(source_dir, percentage):
     # Get list of folders in source directory
     folders = os.listdir(source_dir)

@@ -7,7 +7,8 @@ from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader, random_split
 
 # Define paths and parameters
-train_cars_dataset_path = 'src/data/cars_train'
+train_cars_dataset_path = 'src/data/cars_train/train'
+test_cars_dataset_path = 'src/data/cars_train/test'
 mean = [0.4708, 0.4602, 0.4550]
 std = [0.2593, 0.2584, 0.2634]
 
@@ -26,18 +27,8 @@ test_cars_transforms = transforms.Compose([
 ])
 
 # Load the dataset
-dataset = ImageFolder(root=train_cars_dataset_path)
-
-print(dataset.class_to_idx)
-
-# Split dataset into train and test
-train_size = int(0.8 * len(dataset))  # 80% for training, 20% for testing
-test_size = len(dataset) - train_size
-train_cars_dataset, test_cars_dataset = random_split(dataset, [train_size, test_size])
-
-# Apply transformations to train and test datasets
-train_cars_dataset.dataset.transform = train_cars_transforms
-test_cars_dataset.dataset.transform = test_cars_transforms
+train_cars_dataset = ImageFolder(root=train_cars_dataset_path, transform=train_cars_transforms)
+test_cars_dataset = ImageFolder(root=test_cars_dataset_path, transform=test_cars_transforms)
 
 def show_transformed_images(dataset: ImageFolder, num_images: int = 6):
     loader = DataLoader(dataset, batch_size=num_images, shuffle=True)
@@ -130,12 +121,10 @@ def evaluate_model(model: torch.nn.Module, test_loader: DataLoader):
 
 resnet18_model = torchvision.models.resnet18(weights=torchvision.models.ResNet18_Weights.IMAGENET1K_V1)
 n_features = resnet18_model.fc.in_features
-n_classes = len(dataset.classes)
+n_classes = len(train_cars_dataset.classes)
 resnet18_model.fc = torch.nn.Linear(n_features, n_classes)
 device = get_device()
 resnet18_model = resnet18_model.to(device)
-
-print(device)
 
 loss_fn = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(resnet18_model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.003)
@@ -146,7 +135,7 @@ checkpoint = torch.load('best_cars_model_checkpoint.pth.tar')
 
 resnet18_model = torchvision.models.resnet18()
 n_features = resnet18_model.fc.in_features
-n_classes = len(dataset.classes)
+n_classes = len(train_cars_dataset.classes)
 resnet18_model.fc = torch.nn.Linear(n_features, n_classes)
 resnet18_model.load_state_dict(checkpoint['model'])
 
