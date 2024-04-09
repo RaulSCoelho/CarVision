@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 
 # Define paths and parameters
 train_cars_dataset_path = 'src/data/cars_train/train'
