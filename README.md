@@ -22,7 +22,7 @@
 ## Revisão da literatura 📖
 
 ### Artigo 1
-Reconhecimento de silhueta de automóveis para carros autônomos utilizando aprendizado de máquina
+[Reconhecimento de silhueta de automóveis para carros autônomos utilizando aprendizado de máquina](https://wiki.sj.ifsc.edu.br/images/e/e8/TCC1_Tamara_Arrigoni.pdf)
 
 ### Objetivos 
 <p>Os objetivos do artigo foi desenvolver um sistema para investigar e aplicar técnicas e algoritmos de aprendizado de máquina, analisar o desempenho das técnicas de acordo com um conjunto de dados pré-definido e definir, a partir dos resultados de testes, as técnicas que mais se adéquam ao objetivo geral do projeto.<p/>
