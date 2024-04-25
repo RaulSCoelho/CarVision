@@ -69,10 +69,10 @@ Não informado
 - RNA MLP (Rede Neural Artificial / Multi Layer Perceptron)
 
 ### Resultados obtidos
-No teste do sistema foi utilizado 700 vídeos e a partir destes foram extraídas 12000 imagens.
-A etapa do PDI desta forma obteve uma taxa de acerto de 97.02%.
-A etapa de reconhecimento uma taxa de acerto de 97.7% em relação aos números das placas e 96.4% em relação as letras.
-No processo inteiro obteve-se <b>97.3%</b> de acerto na extração e reconhecimento dos números e <b>96.16%</b> nos caracteres
+<p>No teste do sistema foi utilizado 700 vídeos e a partir destes foram extraídas 12000 imagens.</p>
+<p>A etapa do PDI desta forma obteve uma taxa de acerto de 97.02%.</p>
+<p>A etapa de reconhecimento uma taxa de acerto de 97.7% em relação aos números das placas e 96.4% em relação as letras.</p>
+<p>No processo inteiro obteve-se <b>97.3%</b> de acerto na extração e reconhecimento dos números e <b>96.16%</b> nos caracteres</p>
 
 <hr>
 
