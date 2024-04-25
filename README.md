@@ -77,15 +77,19 @@ Não informado
 <hr>
 
 ### Artigo 3
+[TÉCNICAS DE CLASSIFICAÇÃO DE IMAGENS PARA ANÁLISE DE COBERTURA VEGETAL](https://www.scielo.br/j/eagri/a/NfyXzM9DZsx5g3gnCQgCSsg/?lang=pt)
 
 ### Objetivos 
-
+O artigo defende e explica as técnicas de sensoriamento remoto para subsidiar decisões na área agrosilvopastoral, com ênfase na compreensão dos processos envolvidos e na comunicação dos resultados de forma acessível.
 ### Banco de dados utilizado
-
+Imagens retiradas com sensores e satélites
 ### Modelos utilizados
+Modelo de classificação supervisionada;
+Modelo de classificação não-supervisionada;
+Modelo de classificação híbrida;
 
 ### Resultados obtidos
-
+Melhora na análise de ocupação do solo
 <hr>
 
 ### Artigo 4
