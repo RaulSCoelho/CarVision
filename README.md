@@ -54,14 +54,25 @@ A acurácia de cada modelo foi dada por:
   <hr>
 
 ### Artigo 2
+[Tecnicas de PDI e Inteligência Artificial Aplicadas ao Reconhecimento de placas de Carro nos Padrões Brasileiros]([https://wiki.sj.ifsc.edu.br/images/e/e8/TCC1_Tamara_Arrigoni.pdf](https://www.researchgate.net/profile/Edson-Cavalcanti-Neto/publication/262956949_TECNICAS_DE_PDI_E_INTELIGENCIA_ARTIFICIAL_APLICADAS_AO_RECONHECIMENTO_DE_PLACAS_DE_CARRO_NOS_PADROES_BRASILEIROS/links/0c96053970df6e1d49000000/TECNICAS-DE-PDI-E-INTELIGENCIA-ARTIFICIAL-APLICADAS-AO-RECONHECIMENTO-DE-PLACAS-DE-CARRO-NOS-PADROES-BRASILEIROS.pdf))
 
 ### Objetivos 
+Este trabalho tem como objetivo o desenvolvimento de técnicas de Processamento Digital de Imagem e Inteigência Computacional com o foco em sistema de detecção e reconhecimento de placas de veículos nos padrões brasileiros.
 
 ### Banco de dados utilizado
+Não informado
 
 ### Modelos utilizados
+- Filtros operadores gradiente (Roberts, Prewwit, Sobel)
+- Filtro de Canny
+- Transformada de Hough
+- RNA MLP (Rede Neural Artificial / Multi Layer Perceptron)
 
 ### Resultados obtidos
+No teste do sistema foi utilizado 700 vídeos e a partir destes foram extraídas 12000 imagens.
+A etapa do PDI desta forma obteve uma taxa de acerto de 97.02%.
+A etapa de reconhecimento uma taxa de acerto de 97.7% em relação aos números das placas e 96.4% em relação as letras.
+No processo inteiro obteve-se <b>97.3%</b> de acerto na extração e reconhecimento dos números e <b>96.16%</b> nos caracteres
 
 <hr>
 
