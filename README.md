@@ -1,4 +1,4 @@
-# [CarVision](https://image-classify.vercel.app/)
+# [CarVision](https://image-classify.vercel.app/predictions)
 
 ## Equipe 👷‍♂️
 
