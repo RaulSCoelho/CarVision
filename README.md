@@ -94,7 +94,7 @@ Melhora na análise de ocupação do solo
 
 ### Artigo 4
 
-CLASSIFICAÇÃO DE IMAGENS DERMATOSCÓPICAS COM MACHINE LEARNING (https://bdtd.ucb.br:8443/jspui/bitstream/tede/2802/2/JulioCezarDissertacao2020.pdf)
+[CLASSIFICAÇÃO DE IMAGENS DERMATOSCÓPICAS COM MACHINE LEARNING](https://bdtd.ucb.br:8443/jspui/bitstream/tede/2802/2/JulioCezarDissertacao2020.pdf)
 
 ### Objetivos 
 O artigo tem como objetivo detalhar o desenvolvimento de um aplicativo utilizando machine learning para auxiliar no diagnóstico precoce de melanoma. Para alcançar os objetyivos do trabalho deve ser considerado os seguintes objetivos.
@@ -116,3 +116,7 @@ Modelo de machine learning
 ### Resultados obtidos
 
 Foi possível obter um modelo de machine learning capaz de classificar imagens dermatoscópicas para detecção de melanoma. O modelo obteve a precisão de 94% no processo de treinamento e validação.
+
+## Materiais e Métodos ⚡
+
+## Resultados 🏁
