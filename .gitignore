@@ -6,3 +6,6 @@ __pycache__
 ignore_data
 
 *.tar
+
+*.h5
+*.pth
