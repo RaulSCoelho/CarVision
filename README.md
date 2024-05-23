@@ -103,7 +103,7 @@ O artigo tem como objetivo detalhar o desenvolvimento de um aplicativo utilizand
 2. Identificar bancos de imagens dermatoscópicas para treinar e validar o modelo de machine learning;
 3. Desenvolver um modelo de machine learning para classificar imagens dermatoscópicas em duas categorias: Melanoma e Não Melanoma;
 4. Desenvolver uma aplicação para viabilizar o uso do modelo;
-5. ProporumprotocolodeutilizaçãodoclassificadorpelosDermatologistas.
+5. Propor um protocolo de utilização do classificador pelos Dermatologistas.
 
 ### Banco de dados utilizado
 
@@ -120,31 +120,88 @@ Foi possível obter um modelo de machine learning capaz de classificar imagens d
 ## Materiais e Métodos ⚡
 ### Metodologia
 **Pré-processamento de dados:**
-  - Carregamento do conjunto de dados de treinamento e teste usando ImageFolder.
-  - Definição de transformações de imagem para pré-processamento, como redimensionamento, normalização e aumentação de dados (como espelhamento horizontal e rotação aleatória para dados de treinamento).
+  - Carregamento das anotações de treinamento e validação a partir de arquivos CSV.
+  - Definição das classes a serem usadas no treinamento e filtro das anotações com base nessas classes.
+  - Utilização do ImageDataGenerator para pré-processamento e aumentação de dados, incluindo redimensionamento, normalização, e várias técnicas de aumentação (como espelhamento horizontal e vertical, rotação, zoom e ajustes de brilho).
 
 **Visualização dos dados:**
-  - Exibição de algumas imagens transformadas do conjunto de dados de treinamento para verificar se as transformações estão corretas.
+  - Exibição de algumas imagens transformadas dos conjuntos de dados de treinamento para verificar se as transformações estão corretas.
 
 **Definição do modelo:**
-  - Utilização da arquitetura ResNet-18 pré-treinada no conjunto de dados ImageNet, substituindo a camada de classificação final para se adequar ao número de classes do conjunto de dados de carros.
-  - Movendo o modelo para o dispositivo apropriado (CPU ou GPU).
+  - Utilização da arquitetura VGG16 pré-treinada no conjunto de dados ImageNet, removendo a parte superior do modelo.
+  - Adição de camadas densas, normalização por lotes e dropout para construir a nova cabeça de classificação.
+  - Definição de algumas camadas da VGG16 como não treináveis, dependendo do nível de fine-tuning especificado.
 
 **Definição da função de perda e otimizador:**
-  - Utilização da função de perda CrossEntropyLoss.
-  - Utilização do otimizador SGD (Gradiente Descendente Estocástico) com momento e decaimento de peso.
+  - Utilização da função de perda categorical_crossentropy.
+  - Utilização do otimizador Adam com uma taxa de aprendizado ajustada.
 
 **Treinamento do modelo:**
   - Laço de treinamento por várias épocas, onde cada época inclui:
       - Laço de treinamento sobre os lotes de dados de treinamento.
-      - Computação da perda, retropropagação e atualização dos pesos do modelo.
-      - Avaliação do desempenho do modelo no conjunto de dados de teste após cada época.
-      - Salvamento de um checkpoint do modelo se a precisão no conjunto de dados de teste melhorar.
+      - Avaliação do desempenho do modelo no conjunto de dados de validação após cada época.
+      - Utilização de callbacks, como PlotLossesCallback, ModelCheckpoint, EarlyStopping e ReduceLROnPlateau, para monitorar o desempenho do modelo, salvar o melhor modelo, parar o treinamento cedo se necessário, e ajustar a taxa de aprendizado.
 
 **Avaliação do modelo:**
-  - Laço de avaliação sobre os lotes de dados de teste para calcular a precisão final do modelo.
+  - Avaliação do modelo treinado no conjunto de dados de treinamento e validação para calcular as métricas de perda e precisão
+  - Carregamento do melhor modelo salvo e cálculo da precisão final e da matriz de confusão no conjunto de dados de teste
 
 **Salvamento do modelo:**
   - Salvamento do modelo treinado com melhor desempenho no conjunto de dados de teste.
 
+**Salvamento do modelo:**
+  - Realização de predições no conjunto de dados de validação usando o melhor modelo salvo.
+  - Cálculo e exibição da matriz de confusão e do relatório de classificação para avaliar o desempenho do modelo em termos de precisão, recall e F1-score para cada classe.
+
 ## Resultados 🏁
+
+### Sem modelo pré-treinado
+  - Configurações do modelo:
+    - Tamanho da imagem de entrada: (224, 224)
+    - Formato da entrada: (224, 224, 3)
+    - Tamanho do lote: 32
+    - Número de épocas: 100
+    - Número de classes: 196
+
+  - Métricas de desempenho:
+    - Precisão no conjunto de treinamento: 0.008
+    - Precisão no conjunto de validação: 0.010
+    - Perda no conjunto de treinamento: 5.270
+    - Perda no conjunto de validação: 5.295
+  
+  - Precisão (Accuracy):
+    - O gráfico de precisão mostra que a precisão no treinamento aumentou ligeiramente nas primeiras épocas, mas estabilizou em torno de 0.008.
+    - A precisão no conjunto de validação permaneceu constante em 0.010 ao longo do treinamento.
+
+  - Perda (Loss):
+    - O gráfico de perda mostra que a perda no treinamento diminuiu continuamente ao longo das épocas, começando em 5.282 e diminuindo para 5.270.
+    - A perda no conjunto de validação aumentou levemente ao longo das épocas, começando em 5.282 e aumentando para 5.295.
+
+  Os resultados indicam que o modelo sem pré-treinamento não conseguiu aprender adequadamente as características dos dados, resultando em uma baixa precisão e uma alta perda tanto no treinamento quanto na validação.
+
+
+### Com modelo pré-treinado VGG16 (10 classes)
+  - Configurações do modelo:
+    - Tamanho da imagem de entrada: (224, 224)
+    - Formato da entrada: (224, 224, 3)
+    - Tamanho do lote: 32
+    - Número de épocas: 100
+   
+  - Métricas de desempenho:
+    - Precisão no conjunto de treinamento: 0.654
+    - Precisão no conjunto de validação: 0.608
+    - Perda no conjunto de treinamento: 1.109
+    - Perda no conjunto de validação: 1.290
+
+### Com modelo pré-treinado VGG16 (20 classes)
+  - Configurações do modelo:
+    - Tamanho da imagem de entrada: (224, 224)
+    - Formato da entrada: (224, 224, 3)
+    - Tamanho do lote: 32
+    - Número de épocas: 100
+   
+  - Métricas de desempenho:
+    - Precisão no conjunto de treinamento: 0.909
+    - Precisão no conjunto de validação: 0.703
+    - Perda no conjunto de treinamento: 0.339
+    - Perda no conjunto de validação: 0.832
