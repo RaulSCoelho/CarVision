@@ -205,5 +205,3 @@ Foi possível obter um modelo de machine learning capaz de classificar imagens d
     - Precisão no conjunto de validação: 0.703
     - Perda no conjunto de treinamento: 0.339
     - Perda no conjunto de validação: 0.832
-
-[Baixar a apresentação (PPSX)](./CarVision.ppsx)
