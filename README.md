@@ -19,6 +19,15 @@
 - <b>Número de classes/marcas</b>: 196
 - <b>Número de imagens</b>: 16.185
 
+### Agradecimentos ao Banco de Dados
+[Dados provenientes do Laboratório de IA da Universidade de Stanford](http://ai.stanford.edu/~jkrause/cars/car_dataset.html)
+
+3D Object Representations for Fine-Grained Categorization
+
+Jonathan Krause, Michael Stark, Jia Deng, Li Fei-Fei
+
+4th IEEE Workshop on 3D Representation and Recognition, at ICCV 2013 (3dRR-13). Sydney, Australia. Dec. 8, 2013.
+
 ## Revisão da literatura 📖
 
 ### Artigo 1
